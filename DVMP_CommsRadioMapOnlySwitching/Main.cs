@@ -1,9 +1,9 @@
 ﻿using HarmonyLib;
 using UnityModManagerNet;
+using System;
 
 namespace DVMP_CommsRadioMapOnlySwitching
 {
-    [EnableReloading]
     public static class Main
     {
         public static UnityModManager.ModEntry? mod;
@@ -18,17 +18,25 @@ namespace DVMP_CommsRadioMapOnlySwitching
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
-            Harmony harmony = new Harmony(modEntry.Info.Id);
+            try
+            {
+                Harmony harmony = new Harmony(modEntry.Info.Id);
 
-            if (value)
+                if (value)
+                {
+                    harmony.PatchAll();
+                }
+                else
+                {
+                    harmony.UnpatchAll(modEntry.Info.Id);
+                }
+                return true;
+            } catch (Exception e)
             {
-                harmony.PatchAll();
+                modEntry.Logger.Error($"Failed to {(value ? "enable" : "disable")} mod: {e}");
+                return false;
             }
-            else
-            {
-                harmony.UnpatchAll(modEntry.Info.Id);
-            }
-            return true;
+            
         }
     }
 }

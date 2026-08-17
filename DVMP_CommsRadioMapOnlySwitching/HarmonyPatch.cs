@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-
+using System;
 
 namespace DVMP_CommsRadioMapOnlySwitching
 {
@@ -12,8 +12,16 @@ namespace DVMP_CommsRadioMapOnlySwitching
             bool indirectlyPointing
         )
         {
-            if (switcher is JunctionSwitcher && !indirectlyPointing) return false;
-            return true;
+            try {
+                if (switcher is JunctionSwitcher && !indirectlyPointing) return false;
+                return true;
+            }
+            catch (Exception e)
+            {
+                Main.mod?.Logger.Log($"Exception in JunctionSwitcher patch: {e}");
+                return true;
+            }
+            
         }
     }
 }
